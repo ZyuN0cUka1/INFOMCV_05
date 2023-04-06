@@ -1,7 +1,11 @@
 from sklearn.model_selection import train_test_split
+import cv2 as cv
+import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 keep_stanford40 = ["applauding", "climbing", "drinking", "jumping", "pouring_liquid", "riding_a_bike", "riding_a_horse",
                    "running", "shooting_an_arrow", "smoking", "throwing_frisby", "waving_hands"]
+labels = len(keep_stanford40)
 with open('data/Stanford40/ImageSplits/train.txt', 'r') as f:
     # We won't use these splits but split them ourselves
     train_files = [file_name for file_name in list(map(str.strip, f.readlines())) if
@@ -21,11 +25,24 @@ train_files, test_files = train_test_split(all_files, test_size=0.1, random_stat
 train_labels = ['_'.join(name.split('_')[:-1]) for name in train_files]
 test_labels = ['_'.join(name.split('_')[:-1]) for name in test_files]
 img_path = 'data/Stanford40/JPEGImages/'
-# print(f'Train files ({len(train_files)}):\n\t{train_files}')
-# print(f'Train labels ({len(train_labels)}):\n\t{train_labels}\n'
-#       f'Train Distribution:{list(Counter(sorted(train_labels)).items())}\n')
-# print(f'Test files ({len(test_files)}):\n\t{test_files}')
-# print(f'Test labels ({len(test_labels)}):\n\t{test_labels}\n'
-#       f'Test Distribution:{list(Counter(sorted(test_labels)).items())}\n')
 action_categories = sorted(list(set(train_labels)))
-# print(f'Action categories ({len(action_categories)}):\n{action_categories}')
+
+train_set = []
+for file in train_files:
+    img = cv.imread(img_path + file)
+    img = cv.resize(img, (224, 224), interpolation=cv.INTER_AREA)
+    img = img.astype('float32')/255.0
+    train_set.append(np.array(img))
+train_set = np.array(train_set)
+
+test_set = []
+for file in test_files:
+    img = cv.imread(img_path + file)
+    img = cv.resize(img, (224, 224), interpolation=cv.INTER_AREA)
+    img = img.astype('float32')/255.0
+    test_set.append(np.array(img))
+test_set = np.array(test_set)
+
+le = LabelEncoder()
+train_labels = le.fit_transform(train_labels)
+test_labels = le.fit_transform(test_labels)

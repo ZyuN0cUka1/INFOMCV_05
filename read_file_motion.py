@@ -22,12 +22,12 @@ transform_test = transforms.Compose([
     T.Resize((200, 200)),
     T.CenterCrop((172, 172))])
 
-hmdb51_train = torchvision.datasets.HMDB51('video_data/', 'test_train_splits/', num_frames, frame_rate=5,
-                                           step_between_clips=clip_steps, fold=1, train=True,
+hmdb51_train = torchvision.datasets.HMDB51('data/hmdb51/hmdb51_org/', 'data/hmdb51/test_train_splits/', num_frames,
+                                           frame_rate=5, step_between_clips=clip_steps, fold=1, train=True,
                                            transform=transform, num_workers=2)
 
-hmdb51_test = torchvision.datasets.HMDB51('video_data/', 'test_train_splits/', num_frames, frame_rate=5,
-                                          step_between_clips=clip_steps, fold=1, train=False,
+hmdb51_test = torchvision.datasets.HMDB51('data/hmdb51/', 'test_train_splits/', num_frames,
+                                          frame_rate=5, step_between_clips=clip_steps, fold=1, train=False,
                                           transform=transform_test, num_workers=2)
 
 train_loader = DataLoader(hmdb51_train, batch_size=batch_size, shuffle=True)
