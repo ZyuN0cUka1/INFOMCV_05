@@ -1,15 +1,14 @@
-from collections import Counter
 from sklearn.model_selection import train_test_split
 
 keep_stanford40 = ["applauding", "climbing", "drinking", "jumping", "pouring_liquid", "riding_a_bike", "riding_a_horse",
                    "running", "shooting_an_arrow", "smoking", "throwing_frisby", "waving_hands"]
-with open('data/Stanford40_ImageSplits/ImageSplits/train.txt', 'r') as f:
+with open('data/Stanford40/ImageSplits/train.txt', 'r') as f:
     # We won't use these splits but split them ourselves
     train_files = [file_name for file_name in list(map(str.strip, f.readlines())) if
                    '_'.join(file_name.split('_')[:-1]) in keep_stanford40]
     train_labels = ['_'.join(name.split('_')[:-1]) for name in train_files]
 
-with open('data/Stanford40_ImageSplits/ImageSplits/test.txt', 'r') as f:
+with open('data/Stanford40/ImageSplits/test.txt', 'r') as f:
     # We won't use these splits but split them ourselves
     test_files = [file_name for file_name in list(map(str.strip, f.readlines())) if
                   '_'.join(file_name.split('_')[:-1]) in keep_stanford40]
@@ -21,7 +20,7 @@ all_labels = train_labels + test_labels
 train_files, test_files = train_test_split(all_files, test_size=0.1, random_state=0, stratify=all_labels)
 train_labels = ['_'.join(name.split('_')[:-1]) for name in train_files]
 test_labels = ['_'.join(name.split('_')[:-1]) for name in test_files]
-img_path = 'data/Stanford40_JPEGImages/JPEGImages/'
+img_path = 'data/Stanford40/JPEGImages/'
 # print(f'Train files ({len(train_files)}):\n\t{train_files}')
 # print(f'Train labels ({len(train_labels)}):\n\t{train_labels}\n'
 #       f'Train Distribution:{list(Counter(sorted(train_labels)).items())}\n')
