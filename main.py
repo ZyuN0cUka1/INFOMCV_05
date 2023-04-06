@@ -2,7 +2,8 @@ from read_file_stanford_40 import train_set, train_labels, test_set, test_labels
 from keras.applications import vgg19
 import matplotlib.pyplot as plt
 from keras.models import Model
-from keras.layers import Input, Conv2D, MaxPooling2D, BatchNormalization, Activation, Flatten, Dense, GlobalAveragePooling2D
+from keras.layers import Input, Conv2D, MaxPooling2D, BatchNormalization, Activation, Flatten, Dense, \
+    GlobalAveragePooling2D
 
 input_shape = (224, 224, 3)
 
@@ -42,6 +43,29 @@ def ResNet18():
     # Fully connected layers
     x = GlobalAveragePooling2D()(x)
     # x = Flatten()(x)
+    x = Dense(labels, activation='softmax')(x)
+    # Create model
+    _model = Model(inputs=inputs, outputs=x)
+    return _model
+
+
+def ResNet12():
+    # Input layer
+    inputs = Input(shape=input_shape)
+    # Convolutional layers
+    x = Conv2D(64, (3, 3), strides=2, padding='same')(inputs)
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = MaxPooling2D(pool_size=(3, 3), strides=2, padding='same')(x)
+    # Residual blocks
+    x = residual_block(x, 64, stride=1)
+    x = residual_block(x, 64, stride=1)
+    x = residual_block(x, 64, stride=1)
+    x = residual_block(x, 64, stride=1)
+    x = residual_block(x, 64, stride=1)
+    # Fully connected layers
+    x = GlobalAveragePooling2D()(x)
+    x = Flatten()(x)
     x = Dense(labels, activation='softmax')(x)
     # Create model
     _model = Model(inputs=inputs, outputs=x)
