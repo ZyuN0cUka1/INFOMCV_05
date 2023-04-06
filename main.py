@@ -2,7 +2,7 @@ from read_file_stanford_40 import train_set, train_labels, test_set, test_labels
 from keras.applications import vgg19
 import matplotlib.pyplot as plt
 from keras.models import Model
-from keras.layers import Input, Conv2D, MaxPooling2D, BatchNormalization, Activation, Flatten, Dense
+from keras.layers import Input, Conv2D, MaxPooling2D, BatchNormalization, Activation, Flatten, Dense, GlobalAveragePooling2D
 
 input_shape = (224, 224, 3)
 
@@ -40,7 +40,8 @@ def ResNet18():
     x = residual_block(x, 512, stride=2)
     x = residual_block(x, 512, stride=1)
     # Fully connected layers
-    x = Flatten()(x)
+    x = GlobalAveragePooling2D()(x)
+    # x = Flatten()(x)
     x = Dense(labels, activation='softmax')(x)
     # Create model
     _model = Model(inputs=inputs, outputs=x)
@@ -65,11 +66,16 @@ def model_create():
 def plot_training_results(history, model_name):
     plt.plot(history.history['loss'], label='train_loss')
     plt.plot(history.history['val_loss'], label='val_loss')
+    plt.title(model_name + ' Training and Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
     plt.plot(history.history['accuracy'], label='train_acc')
     plt.plot(history.history['val_accuracy'], label='val_acc')
-    plt.title(model_name + ' Training and Validation Loss and Accuracy')
+    plt.title(model_name + ' Training and Validation Accuracy')
     plt.xlabel('Epoch')
-    plt.ylabel('Loss/Accuracy')
+    plt.ylabel('Accuracy')
     plt.legend()
     plt.show()
 
@@ -77,5 +83,5 @@ def plot_training_results(history, model_name):
 if __name__ == '__main__':
     model = model_create()
     model.summary()
-    history0 = model.fit(train_set, train_labels, validation_data=(test_set, test_labels), epochs=15)
+    history0 = model.fit(train_set, train_labels, validation_data=(test_set, test_labels), epochs=20)
     model.save('Model/Stanford40.h5')
